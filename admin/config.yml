@@ -1,0 +1,30 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "assets/images"
+public_folder: "./assets/images"
+
+collections:
+  - name: "berita"
+    label: "Liputan Berita & Pers"
+    folder: "content/berita"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Judul Berita", name: "title", widget: "string" }
+      - { label: "Nama Media (cth: Radar Malang)", name: "media_name", widget: "string" }
+      - { label: "Link Artikel Berita", name: "link_url", widget: "string" }
+      - { label: "Ringkasan Singkat", name: "summary", widget: "text" }
+      - { label: "Tanggal Terbit", name: "date", widget: "datetime" }
+
+  - name: "pengalaman"
+    label: "Pengalaman & Kegiatan Baru"
+    folder: "content/pengalaman"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Judul Kegiatan / Acara", name: "title", widget: "string" }
+      - { label: "Kategori (cth: Public Speaking / Advokasi)", name: "category", widget: "string" }
+      - { label: "Foto Dokumentasi", name: "image", widget: "image" }
+      - { label: "Deskripsi Singkat", name: "description", widget: "text" }
