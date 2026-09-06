@@ -135,30 +135,105 @@ if (heroSection) {
   observer.observe(heroSection);
 }
 
-// ===== CONTACT FORM TO WHATSAPP REDIRECT =====
+// ===== ADMIN CONTENT RENDER =====
+async function renderAdminContent() {
+  const newsRoot = document.getElementById('adminNewsList');
+  const experienceRoot = document.getElementById('adminExperienceList');
+
+  if (!newsRoot && !experienceRoot) return;
+
+  try {
+    const response = await fetch('./content/content-manifest.json');
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const berita = Array.isArray(data.berita) ? data.berita : [];
+    const pengalaman = Array.isArray(data.pengalaman) ? data.pengalaman : [];
+
+    if (newsRoot) {
+      berita.forEach(item => {
+        const card = document.createElement('a');
+        card.href = item.link_url || '#';
+        card.target = '_blank';
+        card.rel = 'noopener noreferrer';
+        card.className = 'press-card';
+
+        const dateText = item.date ? new Date(item.date).toLocaleDateString('id-ID', {
+          day: 'numeric', month: 'long', year: 'numeric'
+        }) : 'Tanggal tidak tersedia';
+
+        card.innerHTML = `
+          <div class="press-icon-box"><i class="fas fa-newspaper"></i></div>
+          <div class="press-content">
+            <span class="press-site">${item.media_name || 'Admin Content'}</span>
+            <h4>${item.title || 'Judul belum tersedia'}</h4>
+            <p>${item.summary || item.body || 'Belum ada ringkasan.'}</p>
+            <small style="display:block; margin-top:8px; color:#6b7280;">${dateText}</small>
+          </div>
+        `;
+        newsRoot.appendChild(card);
+      });
+    }
+
+    if (experienceRoot) {
+      pengalaman.forEach(item => {
+        const itemNode = document.createElement('div');
+        itemNode.className = 'timeline-item';
+
+        const dateText = item.date ? new Date(item.date).toLocaleDateString('id-ID', {
+          day: 'numeric', month: 'long', year: 'numeric'
+        }) : 'Tanggal tidak tersedia';
+
+        const imageUrl = item.image_url || item.image || '';
+        const safeImageUrl = imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/')
+          ? `/${imageUrl.replace(/^\.\//, '')}`
+          : imageUrl;
+
+        const titleContent = item.link_url
+          ? `<a href="${item.link_url}" target="_blank" rel="noopener noreferrer" class="timeline-link">${item.title || 'Judul kegiatan'}</a>`
+          : `<h3>${item.title || 'Judul kegiatan'}</h3>`;
+
+        const imageMarkup = safeImageUrl
+          ? `<img src="${safeImageUrl}" alt="${item.title || 'Kegiatan'}" class="timeline-image" loading="lazy" style="max-width:100%; border-radius:12px; margin-top: 14px; margin-bottom: 12px; display:block; object-fit:cover;">`
+          : '';
+
+        itemNode.innerHTML = `
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-year">${dateText}</div>
+            ${titleContent}
+            <div class="timeline-org">${item.category || 'Kegiatan Admin'}</div>
+            ${imageMarkup}
+            <p>${item.description || item.body || 'Keterangan kegiatan belum tersedia.'}</p>
+          </div>
+        `;
+        experienceRoot.appendChild(itemNode);
+      });
+    }
+  } catch (error) {
+    console.warn('Tidak ada data admin yang tersedia:', error);
+  }
+}
+
+renderAdminContent();
+
+// ===== CONTACT FORM TO EMAIL REDIRECT =====
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
     const subject = document.getElementById('subject').value;
-    const message = document.getElementById('message').value;
+    const message = document.getElementById('message').value.trim();
 
-    const waNumber = "6281375992892";
-    const formattedText = `Halo Bung Alamsyah Gautama,
+    const subjectText = subject ? `Re: ${subject}` : 'Kontak Portfolio';
+    const mailSubject = encodeURIComponent(subjectText);
+    const mailBody = encodeURIComponent(
+      `Halo Alamsyah Gautama,\n\nNama: ${name}\nEmail: ${email}\nKeperluan: ${subject}\n\nPesan:\n${message}`
+    );
 
-Saya: *${name}* (${email})
-Keperluan: *${subject}*
-
-Pesan:
-${message}
-`;
-
-    const encodedText = encodeURIComponent(formattedText);
-    const waUrl = `https://wa.me/${waNumber}?text=${encodedText}`;
-
-    window.open(waUrl, '_blank');
+    window.location.href = `mailto:alamrambe1@gmail.com?subject=${mailSubject}&body=${mailBody}`;
   });
 }

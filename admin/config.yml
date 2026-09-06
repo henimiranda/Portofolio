@@ -2,29 +2,53 @@ backend:
   name: git-gateway
   branch: main
 
+local_backend: true
+site_url: "https://alamsyah-gautama.netlify.app/"
+display_url: "https://alamsyah-gautama.netlify.app/"
+publish_mode: "editorial_workflow"
+
 media_folder: "assets/images"
-public_folder: "./assets/images"
+public_folder: "/assets/images"
 
 collections:
+  - name: "site"
+    label: "Pengaturan Situs"
+    files:
+      - file: "content/site-settings.yml"
+        label: "Profil Utama"
+        name: "profile"
+        fields:
+          - { label: "Nama Lengkap", name: "name", widget: "string" }
+          - { label: "Judul Situs", name: "site_title", widget: "string" }
+          - { label: "Deskripsi Singkat", name: "description", widget: "text" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "Instagram", name: "instagram", widget: "string" }
+          - { label: "Website", name: "website", widget: "string" }
+
   - name: "berita"
     label: "Liputan Berita & Pers"
     folder: "content/berita"
     create: true
+    delete: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: "Judul Berita", name: "title", widget: "string" }
       - { label: "Nama Media (cth: Radar Malang)", name: "media_name", widget: "string" }
       - { label: "Link Artikel Berita", name: "link_url", widget: "string" }
       - { label: "Ringkasan Singkat", name: "summary", widget: "text" }
-      - { label: "Tanggal Terbit", name: "date", widget: "datetime" }
+      - { label: "Tanggal Terbit", name: "date", widget: "datetime", format: "YYYY-MM-DD" }
 
   - name: "pengalaman"
     label: "Pengalaman & Kegiatan Baru"
     folder: "content/pengalaman"
     create: true
+    delete: true
     slug: "{{slug}}"
     fields:
       - { label: "Judul Kegiatan / Acara", name: "title", widget: "string" }
       - { label: "Kategori (cth: Public Speaking / Advokasi)", name: "category", widget: "string" }
-      - { label: "Foto Dokumentasi", name: "image", widget: "image" }
+      - { label: "Link Kegiatan (opsional)", name: "link_url", widget: "string", required: false, hint: "Jika ada tautan kegiatan/acara, masukkan URL lengkapnya." }
+      - { label: "Foto Dokumentasi (Upload Gambar)", name: "image", widget: "image", required: false, choose_url: true, hint: "Upload gambar dari komputer atau pilih dari URL jika diperlukan." }
+      - { label: "Foto Dokumentasi (URL Gambar)", name: "image_url", widget: "string", required: false, hint: "Masukkan URL gambar lengkap jika ingin memakai link langsung, contoh: https://.../foto.jpg" }
       - { label: "Deskripsi Singkat", name: "description", widget: "text" }
+      - { label: "Tanggal", name: "date", widget: "datetime", format: "YYYY-MM-DD" }
